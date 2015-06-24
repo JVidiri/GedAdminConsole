@@ -1,26 +1,24 @@
 package edu.ifsp.ged.admin;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
+import edu.ifsp.ged.commons.models.StationLogin;
+import edu.ifsp.ged.commons.utils.Utils;
+import edu.ifsp.ged.commons.utils.encrypt.EncrypterHandlerRSA;
 
-import edu.ifsp.ged.commons.models.LoginModel;
-import edu.ifsp.ged.commons.utils.hash.HashHandler;
 
 /**
  * Servlet implementation class FormHandler
  */
 @WebServlet("/FormHandler")
-public class FormHandler extends HttpServlet {
+public class FormHandler extends HttpServlet {	
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -42,29 +40,19 @@ public class FormHandler extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//TODO This must occur in the user machine
-		//getting the form parameters
 		try {
+			//getting the form parameters		
 			String CNPJ = request.getParameter("CNPJ");
-			String pass = request.getParameter("password");
-			//protect the password.
-			pass = HashHandler.createHash(pass);			
+			String pass = request.getParameter("password");			
+			//encoder do base 64
+			Base64.Encoder encoder = Base64.getEncoder();
+			byte[] cipher;
+			cipher = EncrypterHandlerRSA.encrypt(pass, Utils.PUBLIC_KEY);
 			//transform the data from the parameter to a json
-			LoginModel toLogin = new LoginModel(CNPJ,pass);
-			//putting the json hashed into a 'm' message for the other servlet			
-			request.setAttribute("m", HashHandler.createHash(toLogin.serializeInJson()));
-			//getting the other Session handler
-			RequestDispatcher rd = request.getRequestDispatcher("/GedCloud/SessionHandler");
-			//send redirect
-			rd.forward(request,response);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO return error on page.
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO return error on page.
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			StationLogin toLogin = new StationLogin(CNPJ,encoder.encodeToString(cipher));			
+			//send redirect to session handler			
+			response.sendRedirect("/GedCloud/SessionHandler?m="+toLogin.serializeInJson());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}	
 		

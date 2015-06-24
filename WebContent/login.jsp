@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<%@page import="org.hibernate.validator.xml.GetterType"%>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -15,9 +14,8 @@
     <link href="<%=request.getContextPath()%>/res/blue.css" rel="stylesheet" type="text/css" />    
   </head>
   <body class="login-page">
-  <header class="main-header">	  
-      <!-- Logo -->
-      <a href="index2.html" class="logo"><img src="<%=request.getContextPath()%>/img/logo_admin_console.jpg" alt="User Image" height="40" width="40"/></a>
+  <header class="main-header"> 
+      
   </header>
   <div class="login-logo"><img class="login-logo-img" src="<%=request.getContextPath()%>/img/logo.jpg"/></div> 	
     <div class="login-box">         
@@ -27,7 +25,7 @@
           <img class="login-box-head-img" src="<%=request.getContextPath()%>/img/logo_admin_console.jpg">
         </div>
         <p class="login-box-msg">Entre com seu login GED: </p>
-        <form action="LoginSessionStart" method="post">
+        <form action="FormHandler" method="post">
           <div class="form-group has-feedback">          	
             <input name="CNPJ" id="CNPJ" type="text" class="form-control" placeholder="CNPJ"/>
           </div>
